@@ -5,8 +5,10 @@ import yt_dlp
 import asyncio
 import os
 
-# Caminho do FFmpeg local na pasta do bot
-FFMPEG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ffmpeg', 'bin', 'ffmpeg.exe')
+# Caminho do FFmpeg: usa o local na pasta do bot (Windows) se existir,
+# senão usa o "ffmpeg" do sistema (Linux/Railway, onde ele é instalado via Nixpacks)
+_ffmpeg_local = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ffmpeg', 'bin', 'ffmpeg.exe')
+FFMPEG_PATH = _ffmpeg_local if os.path.isfile(_ffmpeg_local) else 'ffmpeg'
 
 # Opções do yt-dlp para baixar o áudio
 YTDL_OPTIONS = {
