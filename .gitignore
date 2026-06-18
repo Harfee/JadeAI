@@ -1,0 +1,6 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+jade_dados.db
+ffmpeg/
