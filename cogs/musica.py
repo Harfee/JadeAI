@@ -143,7 +143,12 @@ class BotoesRecomendacoes(discord.ui.View):
 
     def criar_callback(self, recomendacao):
         async def callback(interaction: discord.Interaction):
-            await interaction.response.defer()
+            try:
+                await interaction.response.defer()
+            except discord.errors.NotFound:
+                return
+            except discord.errors.HTTPException:
+                return
 
             vc = interaction.guild.voice_client
             if not vc or not vc.is_connected():
@@ -353,9 +358,24 @@ class Musica(commands.Cog):
     @app_commands.command(name='tocar', description='『🎵』Toca uma música no canal de voz')
     @app_commands.describe(musica='Nome da música, URL do YouTube ou link do Spotify')
     async def tocar(self, interaction: discord.Interaction, musica: str):
+        # SEMPRE defer primeiro — antes de qualquer outra coisa.
+        # Isso garante que usamos o mínimo de tempo possível dos 3s que o
+        # Discord dá para responder a uma interação, evitando o erro
+        # "Unknown interaction" (404 / 10062).
+        try:
+            await interaction.response.defer()
+        except discord.errors.NotFound:
+            # A interação já expirou antes do bot conseguir responder.
+            # Não tem mais nada a fazer — o Discord já descartou essa interação.
+            print(f"⚠️ Interação de /tocar expirou antes do defer (guild: {interaction.guild.id if interaction.guild else '??'})")
+            return
+        except discord.errors.HTTPException as e:
+            print(f"⚠️ Erro HTTP ao tentar defer em /tocar: {e}")
+            return
+
         # Verifica se o usuário está em um canal de voz
         if not interaction.user.voice:
-            await interaction.response.send_message("❌ Você precisa estar em um canal de voz!", ephemeral=True)
+            await interaction.followup.send("❌ Você precisa estar em um canal de voz!", ephemeral=True)
             return
 
         # Spotify ainda não é suportado diretamente — avisa o usuário
@@ -369,10 +389,8 @@ class Musica(commands.Cog):
                 ),
                 color=discord.Color.orange()
             )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             return
-
-        await interaction.response.defer()
 
         canal_voz = interaction.user.voice.channel
         canal_texto = interaction.channel
