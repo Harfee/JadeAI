@@ -7,12 +7,8 @@ import logging
 import os
 from dotenv import load_dotenv
 
-# Carrega as variáveis do arquivo .env
-load_dotenv()
 
-# ═══════════════════════════════════════
-# CONFIGURAÇÕES — lidas do arquivo .env
-# ═══════════════════════════════════════
+load_dotenv()
 TOKEN          = os.getenv('DISCORD_TOKEN')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 STABILITY_KEY  = os.getenv('STABILITY_KEY')
