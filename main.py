@@ -7,7 +7,12 @@ import logging
 import os
 from dotenv import load_dotenv
 
+# Carrega as variáveis do arquivo .env
 load_dotenv()
+
+# ═══════════════════════════════════════
+# CONFIGURAÇÕES — lidas do arquivo .env
+# ═══════════════════════════════════════
 TOKEN          = os.getenv('DISCORD_TOKEN')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 STABILITY_KEY  = os.getenv('STABILITY_KEY')
@@ -56,17 +61,15 @@ if __name__ == "__main__":
     print("🚀 Iniciando o motor da Jade AI...")
 
     if not TOKEN:
-        print("❌ ERRO: Token não encontrado! Verifique se o arquivo .env existe e tem DISCORD_TOKEN preenchido.")
-        input("Pressione ENTER para fechar...")
-        exit()
+        print("❌ ERRO: Token não encontrado! Verifique as variáveis de ambiente.")
+        exit(1)
 
     try:
         bot.run(TOKEN, log_level=logging.WARNING)
     except discord.errors.LoginFailure:
         print("❌ ERRO: Token inválido ou resetado pelo Discord!")
+        exit(1)
     except BaseException as e:
         print(f"❌ ERRO FATAL: {type(e).__name__} - {e}")
         traceback.print_exc()
-    finally:
-        print("\n🛑 O SCRIPT PAROU DE RODAR.")
-        input("Pressione ENTER para fechar...")
+        exit(1)
