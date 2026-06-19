@@ -352,6 +352,23 @@ class Musica(commands.Cog):
         except Exception:
             pass
 
+
+        async def tocar(self, interaction: discord.Interaction, musica: str):
+            print(f"🎵 /tocar foi chamado! musica='{musica}', guild={interaction.guild.id}")  # LOG TEMPORÁRIO
+
+            try:
+                await interaction.response.defer()
+            except discord.errors.NotFound:
+                print(f"⚠️ Interação de /tocar expirou antes do defer (guild: {interaction.guild.id if interaction.guild else '??'})")
+                return
+            except discord.errors.HTTPException as e:
+                print(f"⚠️ Erro HTTP ao tentar defer em /tocar: {e}")
+                return
+
+            print("✅ defer() concluído com sucesso!")  # LOG TEMPORÁRIO
+            # ... resto do código continua igual
+
+
     # ═══════════════════════════════════════
     # /tocar
     # ═══════════════════════════════════════
